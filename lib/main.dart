@@ -7,21 +7,21 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-     title: 'Flutter Form',
-     theme: ThemeData(
-       primaryColor: Colors.blue,
-     ),
-     debugShowCheckedModeBanner: false,
-     home: Scaffold(
-       appBar: AppBar(
-         title: Text(
-           'Flutter Form',
-         ),
-         centerTitle: true,
-       ),
-       resizeToAvoidBottomInset: false,
-       body: MyFlutterForm(),
-     ),
+      title: 'Flutter Form',
+      theme: ThemeData(
+        primaryColor: Colors.blue,
+      ),
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'Flutter Form',
+          ),
+          centerTitle: true,
+        ),
+        resizeToAvoidBottomInset: false,
+        body: MyFlutterForm(),
+      ),
     );
   }
 }
@@ -32,111 +32,152 @@ class MyFlutterForm extends StatefulWidget {
 }
 
 class _MyFlutterFormState extends State<MyFlutterForm> {
-  
-  @override
   //Global Key here
-
-  Widget build(BuildContext context) {
-
   final _formKey = GlobalKey<FormState>();
+  FocusNode focusNode;
+  final myController = TextEditingController();
+
+  //create the focus node
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    focusNode = FocusNode();
+    myController.addListener(getSecondName);
+  }
+
+  //dispose the focus node
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    focusNode.dispose();
+    myController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
 
     return Form(
       key: _formKey,
-          child: Container(
-        padding: EdgeInsets.only(right:20.0,left:20.0),
+      child: Container(
+        padding: EdgeInsets.only(right: 20.0, left: 20.0),
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Expanded(
-                    child: TextFormField(
-                decoration: InputDecoration(
-                    border: OutlineInputBorder(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Expanded(
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.person),
+                      labelText: 'First Name',
                     ),
-                prefixIcon: Icon(Icons.person),
-                labelText: 'First Name',
+                    keyboardType: TextInputType.text,
+                    focusNode: focusNode,
+                    validator: (String value){
+                      return value.isEmpty ? 'Name cannot be empty' :null;
+                    },
+                    onChanged: (text) => print(text),
                   ),
-              keyboardType: TextInputType.text,
                 ),
-              ),
-              
-            SizedBox(width: 5.0,),
-
-              Expanded(
-                child: TextFormField(
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.person),
-                    labelText: 'Second Name'
+                SizedBox(
+                  width: 5.0,
+                ),
+                Expanded(
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        prefixIcon: Icon(Icons.person),
+                        labelText: 'Second Name'),
+                    keyboardType: TextInputType.text,
+                    validator: (String value){
+                      return value.isEmpty ? 'Name cannot be empty' : null ;
+                    },
+                    controller: myController,
                   ),
-              keyboardType: TextInputType.text,
                 ),
-              ),
-            ],
-              ),         
-            SizedBox(height: 30.0,),
+              ],
+            ),
+            SizedBox(
+              height: 30.0,
+            ),
             TextFormField(
               decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.email),
-                labelText: 'Email'
-              ),
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.email),
+                  labelText: 'Email'),
               keyboardType: TextInputType.emailAddress,
+              validator: (String value){
+                return value.isEmpty ? 'Email cannot be empty' : null ;
+              },
             ),
-            SizedBox(height: 30.0,),
+            SizedBox(
+              height: 30.0,
+            ),
             TextFormField(
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.phone),
-                labelText: 'Phome Number',
+                labelText: 'Phone Number',
                 prefixText: '+234',
               ),
               keyboardType: TextInputType.phone,
-            ),
-            SizedBox(height: 30.0,),
-            TextFormField(
-              decoration: InputDecoration(
-                prefixIcon: Icon(Icons.vpn_key),
-                border: OutlineInputBorder(),
-                labelText: 'Password'
-              ),
-              keyboardType: TextInputType.visiblePassword,
-            ),
-            SizedBox(height: 30.0,),
-             TextFormField(
-              decoration: InputDecoration(
-                prefixIcon: Icon(Icons.vpn_key),
-                border: OutlineInputBorder(),
-                labelText: 'Confirm Password'
-              ),
-              keyboardType: TextInputType.visiblePassword,
               validator: (String value){
-                return int.parse(value) < 8 ? 'Password must be more than 8 characters' : null ;
+                return value.isEmpty ?'Number caanot be empty' :null;
               },
             ),
-            SizedBox(height: 30.0,),
+            SizedBox(
+              height: 30.0,
+            ),
             TextFormField(
               decoration: InputDecoration(
-                prefixIcon: Icon(Icons.filter_center_focus),
-                border: OutlineInputBorder(),
-                labelText: 'Request Focus',
-              ),
+                  prefixIcon: Icon(Icons.vpn_key),
+                  border: OutlineInputBorder(),
+                  labelText: 'Password'),
+              keyboardType: TextInputType.visiblePassword,
+              validator: (String value) {
+                return value.length < 8
+                    ? 'Password must be more than 8 characters'
+                    : null;
+              },
             ),
-            SizedBox(height: 30.0,),
+            SizedBox(
+              height: 30.0,
+            ),
+            TextFormField(
+              decoration: InputDecoration(
+                  prefixIcon: Icon(Icons.vpn_key),
+                  border: OutlineInputBorder(),
+                  labelText: 'Confirm Password'),
+//              keyboardType: TextInputType.visiblePassword,
+              validator: (String value) {
+                return value.length < 8
+                    ? 'Password must be more than 8 characters'
+                    : null;
+              },
+            ),
+            SizedBox(
+              height: 30.0,
+            ),
+            SizedBox(
+              height: 30.0,
+            ),
             ButtonTheme(
               minWidth: double.infinity,
               height: 36.0,
-                        child: RaisedButton(
-                onPressed: (){
-                  if(_formKey.currentState.validate()){
+              child: RaisedButton(
+                onPressed: () {
+                  if (_formKey.currentState.validate()) {
+                    Scaffold.of(context).showSnackBar(SnackBar(
+                      content: Text('Form Validated, No errors'),
+                    ));
                   }
-                  Scaffold.of(context).showSnackBar(
-                    SnackBar(content: Text('Form Validated, No errors'),)
-                  );
+                focusNode.requestFocus();
                 },
                 textColor: Colors.white,
                 elevation: 2.0,
@@ -147,11 +188,13 @@ class _MyFlutterFormState extends State<MyFlutterForm> {
                     fontSize: 18.0,
                   ),
                 ),
-                ),
+              ),
             ),
           ],
         ),
       ),
     );
   }
+
+  void getSecondName() => print('Second name is ${myController.text}');
 }
