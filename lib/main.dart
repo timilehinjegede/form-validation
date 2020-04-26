@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
       home: Scaffold(
         appBar: AppBar(
           title: Text(
-            'Flutter Form',
+            'Form Validation',
           ),
           centerTitle: true,
         ),
@@ -32,163 +32,116 @@ class MyFlutterForm extends StatefulWidget {
 }
 
 class _MyFlutterFormState extends State<MyFlutterForm> {
-  //Global Key here
+
+  //form key here
   final _formKey = GlobalKey<FormState>();
-  FocusNode focusNode;
-  final myController = TextEditingController();
-
-  //create the focus node
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    focusNode = FocusNode();
-    myController.addListener(getSecondName);
-  }
-
-  //dispose the focus node
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    focusNode.dispose();
-    myController.dispose();
-    super.dispose();
-  }
+  // variable to enable auto validating of theform
+  bool _autoValidate = true;
+  // variable to enable toggling between showing and hiding password
+  bool _hidePassword = true;
 
   @override
   Widget build(BuildContext context) {
-
     return Form(
       key: _formKey,
+      autovalidate: _autoValidate,
       child: Container(
-        padding: EdgeInsets.only(right: 20.0, left: 20.0),
+        padding: EdgeInsets.only(
+          right: 20.0,
+          left: 20.0,
+          top: 40,
+        ),
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+        child: ListView(
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                Expanded(
-                  child: TextFormField(
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.person),
-                      labelText: 'First Name',
-                    ),
-                    keyboardType: TextInputType.text,
-                    focusNode: focusNode,
-                    validator: (String value){
-                      return value.isEmpty ? 'Name cannot be empty' :null;
-                    },
-                    onChanged: (text) => print(text),
+                TextFormField(
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.person),
+                    labelText: 'First Name',
                   ),
+                  keyboardType: TextInputType.text,
+                  validator: (String value) {
+                    return value.isEmpty ? 'Name cannot be empty' : null;
+                  },
                 ),
                 SizedBox(
-                  width: 5.0,
+                  height: 30.0,
                 ),
-                Expanded(
-                  child: TextFormField(
-                    decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.person),
-                        labelText: 'Second Name'),
-                    keyboardType: TextInputType.text,
-                    validator: (String value){
-                      return value.isEmpty ? 'Name cannot be empty' : null ;
+                TextFormField(
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.email),
+                      labelText: 'Email'),
+                  keyboardType: TextInputType.emailAddress,
+                  validator: validateEmail,
+                ),
+                SizedBox(
+                  height: 30.0,
+                ),
+                TextFormField(
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.phone),
+                    labelText: 'Phone Number',
+                  ),
+                  keyboardType: TextInputType.phone,
+                  validator: validateMobile,
+                ),
+                SizedBox(
+                  height: 30.0,
+                ),
+                TextFormField(
+                  decoration: InputDecoration(
+                      suffixIcon: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _hidePassword = !_hidePassword;
+                          });
+                        },
+                        child: Icon(Icons.remove_red_eye),
+                      ),
+                      prefixIcon: Icon(Icons.vpn_key),
+                      border: OutlineInputBorder(),
+                      labelText: 'Password'),
+                  keyboardType: TextInputType.visiblePassword,
+                  obscureText: _hidePassword,
+                  validator: (String value) {
+                    return value.length < 8
+                        ? 'Password must be more than 8 characters'
+                        : null;
+                  },
+                ),
+                SizedBox(
+                  height: 30.0,
+                ),
+                SizedBox(
+                  width: double.infinity,
+                  child: RaisedButton(
+                    color: Colors.blue,
+                    onPressed: () {
+                      if (_formKey.currentState.validate()) {
+                        Scaffold.of(context).showSnackBar(SnackBar(
+                          content: Text('Form Validated, No errors'),
+                        ));
+                      }
                     },
-                    controller: myController,
+                    textColor: Colors.white,
+                    elevation: 2.0,
+                    padding: EdgeInsets.all(20.0),
+                    child: Text(
+                      'Log In',
+                      style: TextStyle(
+                        fontSize: 18.0,
+                      ),
+                    ),
                   ),
                 ),
               ],
-            ),
-            SizedBox(
-              height: 30.0,
-            ),
-            TextFormField(
-              decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.email),
-                  labelText: 'Email'),
-              keyboardType: TextInputType.emailAddress,
-              validator: (String value){
-                return value.isEmpty ? 'Email cannot be empty' : null ;
-              },
-            ),
-            SizedBox(
-              height: 30.0,
-            ),
-            TextFormField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.phone),
-                labelText: 'Phone Number',
-                prefixText: '+234',
-              ),
-              keyboardType: TextInputType.phone,
-              validator: (String value){
-                return value.isEmpty ?'Number caanot be empty' :null;
-              },
-            ),
-            SizedBox(
-              height: 30.0,
-            ),
-            TextFormField(
-              decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.vpn_key),
-                  border: OutlineInputBorder(),
-                  labelText: 'Password'),
-              keyboardType: TextInputType.visiblePassword,
-              validator: (String value) {
-                return value.length < 8
-                    ? 'Password must be more than 8 characters'
-                    : null;
-              },
-            ),
-            SizedBox(
-              height: 30.0,
-            ),
-            TextFormField(
-              decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.vpn_key),
-                  border: OutlineInputBorder(),
-                  labelText: 'Confirm Password'),
-//              keyboardType: TextInputType.visiblePassword,
-              validator: (String value) {
-                return value.length < 8
-                    ? 'Password must be more than 8 characters'
-                    : null;
-              },
-            ),
-            SizedBox(
-              height: 30.0,
-            ),
-            SizedBox(
-              height: 30.0,
-            ),
-            ButtonTheme(
-              minWidth: double.infinity,
-              height: 36.0,
-              child: RaisedButton(
-                onPressed: () {
-                  if (_formKey.currentState.validate()) {
-                    Scaffold.of(context).showSnackBar(SnackBar(
-                      content: Text('Form Validated, No errors'),
-                    ));
-                  }
-                focusNode.requestFocus();
-                },
-                textColor: Colors.white,
-                elevation: 2.0,
-                padding: EdgeInsets.all(20.0),
-                child: Text(
-                  'Log In',
-                  style: TextStyle(
-                    fontSize: 18.0,
-                  ),
-                ),
-              ),
             ),
           ],
         ),
@@ -196,5 +149,26 @@ class _MyFlutterFormState extends State<MyFlutterForm> {
     );
   }
 
-  void getSecondName() => print('Second name is ${myController.text}');
+// regex method to validate user phone number
+  String validateMobile(String value) {
+    String pattern = r'(^(?:[+0]9)?[0-9]{11}$)';
+    RegExp regExp = new RegExp(pattern);
+    if (value.length == 0) {
+      return 'Please enter mobile number';
+    } else if (!regExp.hasMatch(value)) {
+      return 'Please enter valid mobile number';
+    }
+    return null;
+  }
+
+  // regex method to validate email
+  String validateEmail(String value) {
+    Pattern pattern =
+        r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+    RegExp regex = new RegExp(pattern);
+    if (!regex.hasMatch(value))
+      return 'Enter Valid Email';
+    else
+      return null;
+  }
 }
