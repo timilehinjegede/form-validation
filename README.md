@@ -1,6 +1,6 @@
 # Form Validation
 
-A new Flutter project.
+A Flutter project that demonstrates auto validation of form.
 
 # 📸 Screenshots
 
